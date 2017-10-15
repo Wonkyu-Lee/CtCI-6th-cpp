@@ -69,8 +69,8 @@ public:
         return count;
     }
 
-    bool hasVertex(Key id) {
-        return vertices.find(id) != vertices.end();
+    bool hasVertex(Key u) {
+        return vertices.find(u) != vertices.end();
     }
 
     bool hasEdge(Key u, Key v) {
@@ -85,11 +85,11 @@ public:
         return found != adj.end();
     }
 
-    bool addVertex(Key id) {
-        if (hasVertex(id))
+    bool addVertex(Key u) {
+        if (hasVertex(u))
             return false;
 
-        vertices[id] = new Vertex(id);
+        vertices[u] = new Vertex(u);
         return true;
     }
 
@@ -122,6 +122,8 @@ public:
                 --inCounts[v];
             }
         }
+
+        delete found->second;
         vertices.erase(found);
 
         // remove in-edges to the vertex
@@ -151,18 +153,18 @@ public:
         return true;
     }
 
-    size_t getInEdgeCount(Key id) {
-        if (!hasVertex(id))
+    size_t getInEdgeCount(Key u) {
+        if (!hasVertex(u))
             return 0;
 
-        return inCounts[id];
+        return inCounts[u];
     }
 
-    size_t getOutEdgeCount(Key id) {
-        if (!hasVertex(id))
+    size_t getOutEdgeCount(Key u) {
+        if (!hasVertex(u))
             return 0;
 
-        auto found = vertices.find(id);
+        auto found = vertices.find(u);
         return found->second->adj.size();
     }
 
@@ -208,7 +210,7 @@ public:
             if (candidates.empty())
                 break;
 
-            char v = candidates.front();
+            Key v = candidates.front();
             candidates.pop_front();
 
             g.removeVertex(v);

@@ -3,39 +3,42 @@
 //
 
 #include "catch.hpp"
-#include <unordered_map>
 
 namespace ex_04_02 {
 
 using namespace std;
 
-struct BstNode {
+struct TreeNode {
     int value;
-    BstNode* left{nullptr};
-    BstNode* right{nullptr};
+    TreeNode* left{nullptr};
+    TreeNode* right{nullptr};
 
-    BstNode(int v): value(v) {}
+    TreeNode(int v): value(v) {}
 
-    ~BstNode() {
+    ~TreeNode() {
         delete left;
         delete right;
     }
 };
 
-BstNode* createFromSortedArray(int* array, int p, int r) {
+TreeNode* createMinimalBst(int* sortedArray, int p, int r) {
     if (p > r)
         return nullptr;
 
     int q = (p + r) / 2;
 
-    BstNode* node = new BstNode(array[q]);
-    node->left = createFromSortedArray(array, p, q - 1);
-    node->right = createFromSortedArray(array, q + 1, r);
+    TreeNode* node = new TreeNode(sortedArray[q]);
+    node->left = createMinimalBst(sortedArray, p, q - 1);
+    node->right = createMinimalBst(sortedArray, q + 1, r);
 
     return node;
 }
 
-int getDepth(BstNode* node) {
+TreeNode* createMinimalBst(int* sortedArray, int n) {
+    return createMinimalBst(sortedArray, 0, n - 1);
+}
+
+int getDepth(TreeNode* node) {
     if (node == nullptr) {
         return 0;
     }
@@ -49,7 +52,7 @@ int getDepth(BstNode* node) {
 TEST_CASE("04-02", "[04-02]" ) {
     // build BST
     int array[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-    BstNode* tree = createFromSortedArray(array, 0, 8);
+    TreeNode* tree = createMinimalBst(array, 9);
 
     // print depth of each BST node
     int depth = getDepth(tree);

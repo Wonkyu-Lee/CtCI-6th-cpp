@@ -11,21 +11,21 @@
 
 namespace qds {
 
-struct BstNode {
+struct TreeNode {
     int value;
-    BstNode* left{nullptr};
-    BstNode* right{nullptr};
-    BstNode* parent{nullptr};
+    TreeNode* left{nullptr};
+    TreeNode* right{nullptr};
+    TreeNode* parent{nullptr};
 
-    BstNode(int v): value(v) {}
+    TreeNode(int v): value(v) {}
 
-    ~BstNode() {
+    ~TreeNode() {
         delete left;
         delete right;
     }
 };
 
-static BstNode* find(BstNode* node, int v) {
+static TreeNode* find(TreeNode* node, int v) {
     if (node == nullptr) {
         return nullptr;
     }
@@ -39,9 +39,9 @@ static BstNode* find(BstNode* node, int v) {
     }
 }
 
-static bool insert(BstNode*& node, int v) {
+static bool insert(TreeNode*& node, int v) {
     if (node == nullptr) {
-        node = new BstNode(v);
+        node = new TreeNode(v);
         return true;
     }
 
@@ -60,7 +60,7 @@ static bool insert(BstNode*& node, int v) {
 }
 
 // returns whether to stop the traversal
-static bool inorderTraverse(BstNode* node, std::function<bool(BstNode*, int)> visit, int depth) {
+static bool inorderTraverse(TreeNode* node, std::function<bool(TreeNode*, int)> visit, int depth) {
     if (node == nullptr)
         return false;
 
@@ -76,13 +76,13 @@ static bool inorderTraverse(BstNode* node, std::function<bool(BstNode*, int)> vi
     return false;
 }
 
-static BstNode* createFromSortedArray(int* array, int p, int r) {
+static TreeNode* createFromSortedArray(int* array, int p, int r) {
     if (p > r)
         return nullptr;
 
     int q = (p + r) / 2;
 
-    BstNode* node = new BstNode(array[q]);
+    TreeNode* node = new TreeNode(array[q]);
 
     node->left = createFromSortedArray(array, p, q - 1);
     if (node->left)
@@ -95,22 +95,22 @@ static BstNode* createFromSortedArray(int* array, int p, int r) {
     return node;
 }
 
-static size_t getNodeCount(BstNode* node) {
+static size_t getNodeCount(TreeNode* node) {
     if (node == nullptr)
         return 0;
 
     return getNodeCount(node->left) + getNodeCount(node->right) + 1;
 }
 
-static void depthFirstSearch(BstNode* node, std::function<bool(BstNode*)> visit) {
+static void depthFirstSearch(TreeNode* node, std::function<bool(TreeNode*)> visit) {
     if (node == nullptr)
         return;
 
-    std::list<BstNode*> queue;
+    std::list<TreeNode*> queue;
     queue.push_back(node);
 
     while (!queue.empty()) {
-        BstNode* u = queue.front();
+        TreeNode* u = queue.front();
         queue.pop_front();
         if (visit(u))
             break;
@@ -123,9 +123,9 @@ static void depthFirstSearch(BstNode* node, std::function<bool(BstNode*)> visit)
     }
 }
 
-using RankMap = std::unordered_map<BstNode*, int>;
+using RankMap = std::unordered_map<TreeNode*, int>;
 
-static int getRanksRecurse(BstNode* node, RankMap& ranks) {
+static int getRanksRecurse(TreeNode* node, RankMap& ranks) {
     if (node == nullptr) {
         return -1;
     }
@@ -137,7 +137,7 @@ static int getRanksRecurse(BstNode* node, RankMap& ranks) {
     return rank;
 }
 
-static RankMap getRanks(BstNode* node) {
+static RankMap getRanks(TreeNode* node) {
     RankMap ranks(getNodeCount(node));
     getRanksRecurse(node, ranks);
     return ranks;
@@ -145,7 +145,7 @@ static RankMap getRanks(BstNode* node) {
 
 using DepthMap = std::unordered_map<int, int>;
 
-static void getDepthsRecurse(BstNode* node, DepthMap& depthMap, int depth) {
+static void getDepthsRecurse(TreeNode* node, DepthMap& depthMap, int depth) {
     if (node == nullptr) {
         return;
     }
@@ -155,7 +155,7 @@ static void getDepthsRecurse(BstNode* node, DepthMap& depthMap, int depth) {
     getDepthsRecurse(node->right, depthMap, depth + 1);
 }
 
-static void getDepths(BstNode* node, DepthMap& depthMap) {
+static void getDepths(TreeNode* node, DepthMap& depthMap) {
     getDepthsRecurse(node, depthMap, 0);
 }
 

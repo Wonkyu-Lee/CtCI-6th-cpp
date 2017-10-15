@@ -10,18 +10,18 @@ namespace ex_04_09 {
 using namespace std;
 using namespace qds;
 
-struct BstNode {
+struct TreeNode {
     int value;
-    BstNode* left{nullptr};
-    BstNode* right{nullptr};
+    TreeNode* left{nullptr};
+    TreeNode* right{nullptr};
 
-    BstNode(int v): value(v) {}
-    ~BstNode() { delete left; delete right; }
+    TreeNode(int v): value(v) {}
+    ~TreeNode() { delete left; delete right; }
 };
 
-void insert(BstNode*& node, int value) {
+void insert(TreeNode*& node, int value) {
     if (node == nullptr) {
-        node = new BstNode(value);
+        node = new TreeNode(value);
         return;
     }
 
@@ -32,16 +32,16 @@ void insert(BstNode*& node, int value) {
     }
 }
 
-Graph<int> convert(BstNode* node) {
+Graph<int> convert(TreeNode* node) {
     Graph<int> g;
     if (node == nullptr)
         return g;
 
-    list<BstNode*> queue;
+    list<TreeNode*> queue;
     g.addVertex(node->value);
     queue.push_back(node);
     while (!queue.empty()) {
-        BstNode* u = queue.front();
+        TreeNode* u = queue.front();
         queue.pop_front();
 
         if (u->left != nullptr) {
@@ -85,13 +85,13 @@ void printRecurse(Graph<int> g, vector<int> seq) {
     }
 }
 
-void printAllTopologicalSequences(BstNode* node) {
+void printAllTopologicalSequences(TreeNode* node) {
     Graph<int> g = convert(node);
     printRecurse(g, vector<int>());
 }
 
 TEST_CASE("04-09", "[04-09]") {
-    BstNode* tree = nullptr;
+    TreeNode* tree = nullptr;
     insert(tree, 5);
     insert(tree, 3);
     insert(tree, 8);

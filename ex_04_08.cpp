@@ -8,27 +8,27 @@ namespace ex_04_08 {
 
 using namespace std;
 
-struct BstNode {
+struct TreeNode {
     int value;
-    BstNode* left{nullptr};
-    BstNode* right{nullptr};
-    BstNode* parent{nullptr};
+    TreeNode* left{nullptr};
+    TreeNode* right{nullptr};
+    TreeNode* parent{nullptr};
 
-    BstNode(int v): value(v) {}
+    TreeNode(int v): value(v) {}
 
-    ~BstNode() {
+    ~TreeNode() {
         delete left;
         delete right;
     }
 };
 
-BstNode* insert(BstNode*& node, int value) {
+TreeNode* insert(TreeNode*& node, int value) {
     if (node == nullptr) {
-        node = new BstNode(value);
+        node = new TreeNode(value);
         return node;
     }
 
-    BstNode* r = nullptr;
+    TreeNode* r = nullptr;
     if (value < node->value) {
         r = insert(node->left, value);
         node->left->parent = node;
@@ -40,10 +40,10 @@ BstNode* insert(BstNode*& node, int value) {
     return r;
 }
 
-BstNode* findFirstCommonAncestor(BstNode* n1, BstNode* n2) {
-    BstNode* p = n1;
+TreeNode* findFirstCommonAncestor(TreeNode* n1, TreeNode* n2) {
+    TreeNode* p = n1;
     while (p != nullptr) {
-        BstNode* q = n2;
+        TreeNode* q = n2;
         while (q != nullptr) {
             if (p == q)
                 return p;
@@ -66,14 +66,14 @@ TEST_CASE("04-08", "[04-08]") {
      *       4
      */
 
-    BstNode* tree = nullptr;
-    BstNode* n5 = insert(tree, 5);
-    BstNode* n2 = insert(tree, 2);
-    BstNode* n6 = insert(tree, 6);
-    BstNode* n1 = insert(tree, 1);
-    BstNode* n3 = insert(tree, 3);
-    BstNode* n7 = insert(tree, 7);
-    BstNode* n4 = insert(tree, 4);
+    TreeNode* tree = nullptr;
+    TreeNode* n5 = insert(tree, 5);
+    TreeNode* n2 = insert(tree, 2);
+    TreeNode* n6 = insert(tree, 6);
+    TreeNode* n1 = insert(tree, 1);
+    TreeNode* n3 = insert(tree, 3);
+    TreeNode* n7 = insert(tree, 7);
+    TreeNode* n4 = insert(tree, 4);
 
     REQUIRE(findFirstCommonAncestor(n1, n3) == n2);
     REQUIRE(findFirstCommonAncestor(n1, n7) == n5);

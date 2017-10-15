@@ -10,109 +10,200 @@ namespace ex_04_05 {
 
 using namespace std;
 
-struct BstNode {
+struct TreeNode {
     int value;
-    BstNode* left{nullptr};
-    BstNode* right{nullptr};
+    TreeNode* left{nullptr};
+    TreeNode* right{nullptr};
 
-    BstNode(int v): value(v) {}
+    TreeNode(int v): value(v) {}
 
-    ~BstNode() {
+    ~TreeNode() {
         delete left;
         delete right;
     }
 };
 
-bool insert(BstNode*& node, int v) {
+TreeNode* insertToBst(TreeNode*& node, int v) {
     if (node == nullptr) {
-        node = new BstNode(v);
-        return true;
-    }
-
-    bool success = false;
-    if (v < node->value) {
-        success = insert(node->left, v);
-    } else if (node->value < v) {
-        success = insert(node->right, v);
-    } else {
-        success = false;
-    }
-
-    return success;
-}
-
-BstNode* find(BstNode* node, int v) {
-    if (node == nullptr) {
-        return nullptr;
-    }
-
-    if (v < node->value) {
-        return find(node->left, v);
-    } else if (node->value < v) {
-        return find(node->right, v);
-    } else {
+        node = new TreeNode(v);
         return node;
     }
+
+    if (v <= node->value) {
+        return insertToBst(node->left, v);
+    } else {
+        return insertToBst(node->right, v);
+    }
 }
 
-bool isBinarySearchTree(BstNode* node) {
-    if (node == nullptr) {
+namespace solution1 {
+
+// it works for BSTs with unique keys
+bool checkBstRecurse(TreeNode* node, int& lastValue) {
+    if (node == nullptr)
         return true;
+
+    if (node->left != nullptr) {
+        if (!checkBstRecurse(node->left, lastValue)) {
+            return false;
+        }
     }
 
-    if (!isBinarySearchTree(node->left))
+    if (lastValue > node->value)
         return false;
 
-    if (!isBinarySearchTree(node->right))
-        return false;
+    lastValue = node->value;
 
-    if (node->left) {
-        if (!(node->left->value < node->value))
+    if (node->right != nullptr) {
+        if (!checkBstRecurse(node->right, lastValue)) {
             return false;
-    }
-
-    if (node->right) {
-        if (!(node->value < node->right->value))
-            return false;
+        }
     }
 
     return true;
 }
 
+bool checkBst(TreeNode* node) {
+    int lastValue = numeric_limits<int>::min();
+    return checkBstRecurse(node, lastValue);
+}
+
+} // namespace solution1
+
+
+namespace solution2 {
+
+bool checkBstRecurse(TreeNode* node, int minValue, int maxValue) {
+    if (node == nullptr)
+        return true;
+
+    // min < value <= max
+    if (node->value <= minValue || maxValue < node->value)
+        return false;
+
+    if (!checkBstRecurse(node->left, minValue, node->value))
+        return false;
+
+    if (!checkBstRecurse(node->right, node->value, maxValue))
+        return false;
+
+    return true;
+}
+
+bool checkBst(TreeNode* node) {
+    int minValue = numeric_limits<int>::min();
+    int maxValue = numeric_limits<int>::max();
+    return checkBstRecurse(node, minValue, maxValue);
+}
+
+} // namespace solution2
+
+
 TEST_CASE("04-05", "[04-05]" ) {
-    SECTION("Valid BST") {
-        BstNode* tree = nullptr;
-        insert(tree, 5);
-        insert(tree, 3);
-        insert(tree, 1);
-        insert(tree, 2);
-        insert(tree, 4);
-        insert(tree, 8);
-        insert(tree, 7);
-        insert(tree, 6);
+    SECTION("Solution1") {
+        using namespace solution1;
 
-        REQUIRE(isBinarySearchTree(tree));
+        SECTION("Valid BST without redundancy") {
+            TreeNode* tree = nullptr;
+            insertToBst(tree, 5);
+            insertToBst(tree, 3);
+            insertToBst(tree, 1);
+            insertToBst(tree, 2);
+            insertToBst(tree, 4);
+            insertToBst(tree, 8);
+            insertToBst(tree, 7);
+            insertToBst(tree, 6);
 
-        delete tree;
+            REQUIRE(checkBst(tree));
+
+            delete tree;
+        }
+
+        SECTION("Invalid BST with redundancy") {
+            TreeNode* tree = nullptr;
+            TreeNode* n5 = insertToBst(tree, 5);
+            TreeNode* n3 = insertToBst(tree, 3);
+            TreeNode* n7 = insertToBst(tree, 7);
+            TreeNode* n2 = insertToBst(tree, 2);
+
+            // make the tree invalid: right children cannot have same value with the parents
+            TreeNode* n3a = new TreeNode(3);
+            n3->right = n3a;
+
+            // invalid but cannot detect!
+            REQUIRE(checkBst(tree) == true);
+
+            delete tree;
+        }
+
+        SECTION("Invalid BST without redundancy") {
+            TreeNode* tree = nullptr;
+            TreeNode* n5 = insertToBst(tree, 5);
+            TreeNode* n3 = insertToBst(tree, 3);
+            TreeNode* n7 = insertToBst(tree, 7);
+            TreeNode* n2 = insertToBst(tree, 2);
+
+            // make the tree invalid
+            TreeNode* n6 = new TreeNode(6);
+            n3->right = n6;
+
+            REQUIRE(checkBst(tree) == false);
+
+            delete tree;
+        }
     }
 
-    SECTION("Invalid BST") {
-        BstNode* tree = nullptr;
-        insert(tree, 5);
-        insert(tree, 3);
-        insert(tree, 7);
-        insert(tree, 2);
 
-        // make the tree invalid
-        BstNode* n3 = find(tree, 3);
-        BstNode* n1 = new BstNode(1);
-        BstNode* n4 = new BstNode(4);
-        n3->right = n1;
-        n1->right = n4;
+    SECTION("Solution2") {
+        using namespace solution2;
 
-        REQUIRE(isBinarySearchTree(tree) == false);
+        SECTION("Valid BST without redundancy") {
+            TreeNode* tree = nullptr;
+            insertToBst(tree, 5);
+            insertToBst(tree, 3);
+            insertToBst(tree, 1);
+            insertToBst(tree, 2);
+            insertToBst(tree, 4);
+            insertToBst(tree, 8);
+            insertToBst(tree, 7);
+            insertToBst(tree, 6);
 
-        delete tree;
+            REQUIRE(checkBst(tree));
+
+            delete tree;
+        }
+
+        SECTION("Valid BST with redundancy") {
+            TreeNode* tree = nullptr;
+            TreeNode* n5 = insertToBst(tree, 5);
+            TreeNode* n3 = insertToBst(tree, 3);
+            TreeNode* n7 = insertToBst(tree, 7);
+            TreeNode* n2 = insertToBst(tree, 2);
+
+            // make the tree invalid: right children cannot have same value with the parents
+            TreeNode* n3a = new TreeNode(3);
+            n3->right = n3a;
+
+            REQUIRE(checkBst(tree) == false);
+
+            delete tree;
+        }
+
+        SECTION("Invalid BST without redundancy") {
+            TreeNode* tree = nullptr;
+            TreeNode* n5 = insertToBst(tree, 5);
+            TreeNode* n3 = insertToBst(tree, 3);
+            TreeNode* n7 = insertToBst(tree, 7);
+            TreeNode* n2 = insertToBst(tree, 2);
+
+            // make the tree invalid
+            TreeNode* n6 = new TreeNode(6);
+            n3->right = n6;
+
+            REQUIRE(checkBst(tree) == false);
+
+            delete tree;
+        }
     }
 }
 

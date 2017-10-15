@@ -8,77 +8,91 @@ namespace ex_04_06 {
 
 using namespace std;
 
-struct BstNode {
+struct TreeNode {
     int value;
-    BstNode* left{nullptr};
-    BstNode* right{nullptr};
-    BstNode* parent{nullptr};
+    TreeNode* left{nullptr};
+    TreeNode* right{nullptr};
+    TreeNode* parent{nullptr};
 
-    BstNode(int v): value(v) {}
+    TreeNode(int v): value(v) {}
 
-    ~BstNode() {
+    ~TreeNode() {
         delete left;
         delete right;
     }
 };
 
-BstNode* insert(BstNode*& node, int value) {
+TreeNode* insertToBst(TreeNode*& node, int value) {
     if (node == nullptr) {
-        node = new BstNode(value);
+        node = new TreeNode(value);
         return node;
     }
 
-    BstNode* r = nullptr;
+    TreeNode* r = nullptr;
     if (value < node->value) {
-        r = insert(node->left, value);
+        r = insertToBst(node->left, value);
         node->left->parent = node;
     } else if (node->value < value) {
-        r = insert(node->right, value);
+        r = insertToBst(node->right, value);
         node->right->parent = node;
     }
 
     return r;
 }
 
-BstNode* findInorderSuccessor(BstNode* node) {
+TreeNode* findLeftMostChild(TreeNode* node) {
+    if (node == nullptr)
+        return nullptr;
+
+    while (node->left != nullptr) {
+        node = node->left;
+    }
+
+    return node;
+}
+
+TreeNode* findInorderSuccessor(TreeNode* node) {
     if (node == nullptr)
         return nullptr;
 
     if (node->right != nullptr)
-        return node->right;
+        return findLeftMostChild(node->right);
 
-    BstNode* p = node->parent;
-    BstNode* n = node;
-    while (p != nullptr) {
-        if (n == p->left)
-            return p;
-
+    TreeNode* p = node->parent;
+    TreeNode* n = node;
+    while (p != nullptr && n != p->left) {
         p = p->parent;
         n = n->parent;
     }
 
-    return nullptr;
+    return p;
 }
 
 TEST_CASE("04-06", "[04-06]") {
     /* Tree
-     *     5
+     *
+     *     7
      *    / \
-     *   2   6
+     *   2   8
      *  / \   \
-     * 1   3   7
-     *      \
-     *       4
+     * 1   5   9
+     *    / \
+     *   4   6
+     *  /
+     * 3
+     *
      */
 
-    BstNode* tree = nullptr;
-    BstNode* n5 = insert(tree, 5);
-    BstNode* n2 = insert(tree, 2);
-    BstNode* n6 = insert(tree, 6);
-    BstNode* n1 = insert(tree, 1);
-    BstNode* n3 = insert(tree, 3);
-    BstNode* n7 = insert(tree, 7);
-    BstNode* n4 = insert(tree, 4);
+    TreeNode* tree = nullptr;
+    TreeNode* n7 = insertToBst(tree, 7);
+    TreeNode* n2 = insertToBst(tree, 2);
+    TreeNode* n8 = insertToBst(tree, 8);
+    TreeNode* n1 = insertToBst(tree, 1);
+    TreeNode* n5 = insertToBst(tree, 5);
+    TreeNode* n9 = insertToBst(tree, 9);
+    TreeNode* n4 = insertToBst(tree, 4);
+    TreeNode* n6 = insertToBst(tree, 6);
+    TreeNode* n3 = insertToBst(tree, 3);
 
     REQUIRE(findInorderSuccessor(n1) == n2);
     REQUIRE(findInorderSuccessor(n2) == n3);
@@ -86,7 +100,9 @@ TEST_CASE("04-06", "[04-06]") {
     REQUIRE(findInorderSuccessor(n4) == n5);
     REQUIRE(findInorderSuccessor(n5) == n6);
     REQUIRE(findInorderSuccessor(n6) == n7);
-    REQUIRE(findInorderSuccessor(n7) == nullptr);
+    REQUIRE(findInorderSuccessor(n7) == n8);
+    REQUIRE(findInorderSuccessor(n8) == n9);
+    REQUIRE(findInorderSuccessor(n9) == nullptr);
 
     delete tree;
 }

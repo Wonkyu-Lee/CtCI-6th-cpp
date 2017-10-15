@@ -10,18 +10,18 @@ namespace ex_04_11 {
 
 using namespace std;
 
-struct BstNode {
+struct TreeNode {
     int value;
-    BstNode* left{nullptr};
-    BstNode* right{nullptr};
+    TreeNode* left{nullptr};
+    TreeNode* right{nullptr};
 
-    BstNode(int v): value(v) {}
-    ~BstNode() { delete left; delete right; }
+    TreeNode(int v): value(v) {}
+    ~TreeNode() { delete left; delete right; }
 };
 
-void insert(BstNode*& node, int value) {
+void insert(TreeNode*& node, int value) {
     if (node == nullptr) {
-        node = new BstNode(value);
+        node = new TreeNode(value);
     }
 
     if (value < node->value) {
@@ -31,25 +31,25 @@ void insert(BstNode*& node, int value) {
     }
 }
 
-size_t getNodeCount(BstNode* node) {
+size_t getNodeCount(TreeNode* node) {
     if (node == nullptr)
         return 0;
 
     return getNodeCount(node->left) + getNodeCount(node->right) + 1;
 }
 
-BstNode* getRandomNode(BstNode* node) {
+TreeNode* getRandomNode(TreeNode* node) {
     if (node == nullptr)
         return nullptr;
 
     size_t nodeCount = getNodeCount(node);
     size_t walkCount = std::rand() % nodeCount;
 
-    std::list<BstNode*> queue;
+    std::list<TreeNode*> queue;
     queue.push_back(node);
 
     while (!queue.empty()) {
-        BstNode* u = queue.front();
+        TreeNode* u = queue.front();
         queue.pop_front();
         if (walkCount == 0) {
             return u;
@@ -79,7 +79,7 @@ TEST_CASE("04-11", "[04-11]") {
      *       4
      */
 
-    BstNode* tree = nullptr;
+    TreeNode* tree = nullptr;
     insert(tree, 5);
     insert(tree, 2);
     insert(tree, 6);
@@ -91,7 +91,7 @@ TEST_CASE("04-11", "[04-11]") {
     int tryCount = 10000;
     map<int, int> counts;
     for (int i = 0; i < tryCount; ++i) {
-        BstNode* node = getRandomNode(tree);
+        TreeNode* node = getRandomNode(tree);
         ++counts[node->value];
     }
 

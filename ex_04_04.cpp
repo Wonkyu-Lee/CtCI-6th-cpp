@@ -11,30 +11,30 @@ namespace ex_04_04 {
 
 using namespace std;
 
-struct BstNode {
+struct TreeNode {
     int value;
-    BstNode* left{nullptr};
-    BstNode* right{nullptr};
+    TreeNode* left{nullptr};
+    TreeNode* right{nullptr};
 
-    BstNode(int v): value(v) {}
+    TreeNode(int v): value(v) {}
 
-    ~BstNode() {
+    ~TreeNode() {
         delete left;
         delete right;
     }
 };
 
-bool insert(BstNode*& node, int v) {
+bool insertToBst(TreeNode*& node, int v) {
     if (node == nullptr) {
-        node = new BstNode(v);
+        node = new TreeNode(v);
         return true;
     }
 
     bool success = false;
     if (v < node->value) {
-        success = insert(node->left, v);
+        success = insertToBst(node->left, v);
     } else if (node->value < v) {
-        success = insert(node->right, v);
+        success = insertToBst(node->right, v);
     } else {
         success = false;
     }
@@ -42,37 +42,37 @@ bool insert(BstNode*& node, int v) {
     return success;
 }
 
-bool isBalancedRecurse(BstNode* node, int& rank) {
+bool isBalancedRecurse(TreeNode* node, int& height) {
     if (node == nullptr) {
-        rank = -1;
+        height = -1;
         return true;
     }
 
-    int leftRank;
-    if (!isBalancedRecurse(node->left, leftRank)) {
+    int leftHeight;
+    if (!isBalancedRecurse(node->left, leftHeight)) {
         return false;
     }
 
-    int rightRank;
-    if (!isBalancedRecurse(node->right, rightRank)) {
+    int rightHeight;
+    if (!isBalancedRecurse(node->right, rightHeight)) {
         return false;
     }
 
-    rank = std::max(leftRank, rightRank) + 1;
-    return std::abs(leftRank - rightRank) <= 1;
+    height = std::max(leftHeight, rightHeight) + 1;
+    return std::abs(leftHeight - rightHeight) <= 1;
 }
 
-bool isBalanced(BstNode* node) {
-    int rank;
-    return isBalancedRecurse(node, rank);
+bool isBalanced(TreeNode* node) {
+    int height;
+    return isBalancedRecurse(node, height);
 }
 
 TEST_CASE("04-04", "[04-04]" ) {
     SECTION("Balanced tree") {
-        BstNode* tree = nullptr;
-        insert(tree, 5);
-        insert(tree, 3);
-        insert(tree, 7);
+        TreeNode* tree = nullptr;
+        insertToBst(tree, 5);
+        insertToBst(tree, 3);
+        insertToBst(tree, 7);
 
         REQUIRE(isBalanced(tree));
 
@@ -80,12 +80,12 @@ TEST_CASE("04-04", "[04-04]" ) {
     }
 
     SECTION("Unbalanced tree") {
-        BstNode* tree = nullptr;
-        insert(tree, 5);
-        insert(tree, 3);
-        insert(tree, 7);
-        insert(tree, 8);
-        insert(tree, 9);
+        TreeNode* tree = nullptr;
+        insertToBst(tree, 5);
+        insertToBst(tree, 3);
+        insertToBst(tree, 7);
+        insertToBst(tree, 8);
+        insertToBst(tree, 9);
 
         REQUIRE(isBalanced(tree) == false);
 

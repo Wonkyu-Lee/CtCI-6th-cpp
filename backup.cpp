@@ -11,20 +11,20 @@ namespace backup {
 
 using namespace std;
 
-struct BstNode {
+struct TreeNode {
     int value;
-    BstNode* left{nullptr};
-    BstNode* right{nullptr};
-    BstNode* parent{nullptr};
+    TreeNode* left{nullptr};
+    TreeNode* right{nullptr};
+    TreeNode* parent{nullptr};
 
-    BstNode(int v): value(v) {}
+    TreeNode(int v): value(v) {}
 
-    ~BstNode() {
+    ~TreeNode() {
         delete left;
         delete right;
     }
 
-    static BstNode* find(BstNode* node, int v) {
+    static TreeNode* find(TreeNode* node, int v) {
         if (node == nullptr) {
             return nullptr;
         }
@@ -38,9 +38,9 @@ struct BstNode {
         }
     }
 
-    static bool insert(BstNode*& node, int v) {
+    static bool insert(TreeNode*& node, int v) {
         if (node == nullptr) {
-            node = new BstNode(v);
+            node = new TreeNode(v);
             return true;
         }
 
@@ -59,7 +59,7 @@ struct BstNode {
     }
 
     // returns whether to stop the traversal
-    static bool inorderTraverse(BstNode* node, function<bool(BstNode*, int)> visit, int depth) {
+    static bool inorderTraverse(TreeNode* node, function<bool(TreeNode*, int)> visit, int depth) {
         if (node == nullptr)
             return false;
 
@@ -75,13 +75,13 @@ struct BstNode {
         return false;
     }
 
-    static BstNode* createFromSortedArray(int* array, int p, int r) {
+    static TreeNode* createFromSortedArray(int* array, int p, int r) {
         if (p > r)
             return nullptr;
 
         int q = (p + r) / 2;
 
-        BstNode* node = new BstNode(array[q]);
+        TreeNode* node = new TreeNode(array[q]);
 
         node->left = createFromSortedArray(array, p, q - 1);
         if (node->left)
@@ -94,22 +94,22 @@ struct BstNode {
         return node;
     }
 
-    static size_t getNodeCount(BstNode* node) {
+    static size_t getNodeCount(TreeNode* node) {
         if (node == nullptr)
             return 0;
 
         return getNodeCount(node->left) + getNodeCount(node->right) + 1;
     }
 
-    static void depthFirstSearch(BstNode* node, function<bool(BstNode*)> visit) {
+    static void depthFirstSearch(TreeNode* node, function<bool(TreeNode*)> visit) {
         if (node == nullptr)
             return;
 
-        list<BstNode*> queue;
+        list<TreeNode*> queue;
         queue.push_back(node);
 
         while (!queue.empty()) {
-            BstNode* u = queue.front();
+            TreeNode* u = queue.front();
             queue.pop_front();
             if (visit(u))
                 break;
@@ -122,9 +122,9 @@ struct BstNode {
         }
     }
 
-    using RankMap = unordered_map<BstNode*, int>;
+    using RankMap = unordered_map<TreeNode*, int>;
 
-    static int getRanksRecurse(BstNode* node, RankMap& ranks) {
+    static int getRanksRecurse(TreeNode* node, RankMap& ranks) {
         if (node == nullptr) {
             return -1;
         }
@@ -136,7 +136,7 @@ struct BstNode {
         return rank;
     }
 
-    static RankMap getRanks(BstNode* node) {
+    static RankMap getRanks(TreeNode* node) {
         RankMap ranks(getNodeCount(node));
         getRanksRecurse(node, ranks);
         return ranks;
@@ -144,7 +144,7 @@ struct BstNode {
 
     using DepthMap = unordered_map<int, int>;
 
-    static void getDepthsRecurse(BstNode* node, DepthMap& depthMap, int depth) {
+    static void getDepthsRecurse(TreeNode* node, DepthMap& depthMap, int depth) {
         if (node == nullptr) {
             return;
         }
@@ -154,29 +154,29 @@ struct BstNode {
         getDepthsRecurse(node->right, depthMap, depth + 1);
     }
 
-    static void getDepths(BstNode* node, DepthMap& depthMap) {
+    static void getDepths(TreeNode* node, DepthMap& depthMap) {
         getDepthsRecurse(node, depthMap, 0);
     }
 };
 
 TEST_CASE("backup", "[04]" ) {
-    BstNode* tree = nullptr;
-    BstNode::insert(tree, 5);
-    BstNode::insert(tree, 3);
-    BstNode::insert(tree, 7);
-    BstNode::insert(tree, 2);
-    BstNode::insert(tree, 1);
-    BstNode::insert(tree, 4);
-    BstNode::insert(tree, 9);
-    BstNode::insert(tree, 6);
-    BstNode::insert(tree, 8);
+    TreeNode* tree = nullptr;
+    TreeNode::insert(tree, 5);
+    TreeNode::insert(tree, 3);
+    TreeNode::insert(tree, 7);
+    TreeNode::insert(tree, 2);
+    TreeNode::insert(tree, 1);
+    TreeNode::insert(tree, 4);
+    TreeNode::insert(tree, 9);
+    TreeNode::insert(tree, 6);
+    TreeNode::insert(tree, 8);
 
-    size_t nodeCount = BstNode::getNodeCount(tree);
+    size_t nodeCount = TreeNode::getNodeCount(tree);
     vector<int> d(nodeCount, 0); // depth
     int maxDepth = 0;
 
 // fill depths
-    BstNode::inorderTraverse(tree, [&](BstNode* node, int depth) {
+    TreeNode::inorderTraverse(tree, [&](TreeNode* node, int depth) {
         d[node->value] = depth;
         if (depth > maxDepth)
             maxDepth = depth;
@@ -185,8 +185,8 @@ TEST_CASE("backup", "[04]" ) {
     }, 0);
 
 // link nodes with the same depth
-    vector<list<BstNode*>> groups(maxDepth + 1);
-    BstNode::depthFirstSearch(tree, [&](BstNode* node) {
+    vector<list<TreeNode*>> groups(maxDepth + 1);
+    TreeNode::depthFirstSearch(tree, [&](TreeNode* node) {
         int depth = d[node->value];
         groups[depth].push_back(node);
         return false;

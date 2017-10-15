@@ -23,13 +23,12 @@ public:
         _adj[u].push_back(v);
     }
 
-    // visit returns whether to exit
-    void breadthFirstSearch(int s, function<bool(int)> visit) {
+    void breadthFirstSearch(int s, function<bool(int)> visitThenExit) {
         vector<bool> visited(_vertexCount, false);
         list<int> queue;
 
         visited[s] = true;
-        if (visit(s))
+        if (visitThenExit(s))
             return;
 
         queue.push_back(s);
@@ -43,7 +42,7 @@ public:
                     continue;
 
                 visited[v] = true;
-                if (visit(v))
+                if (visitThenExit(v))
                     return;
 
                 queue.push_back(v);
@@ -51,15 +50,15 @@ public:
         }
     }
 
-    bool hasPath(int u, int v) {
+    bool hasPath(int s, int t) {
         bool pathExists = false;
-        breadthFirstSearch(u, [&](int x) {
-            if (x == v) {
+        breadthFirstSearch(s, [&](int v) {
+            if (v == t) {
                 pathExists = true;
-                return true;
+                return true; // found! stop searching
             }
 
-            return false;
+            return false; // continue searching
         });
 
         return pathExists;
@@ -77,6 +76,7 @@ TEST_CASE( "04-01", "[04-01]" ) {
     g.addEdge(3, 2);
     g.addEdge(3, 4);
 
+    REQUIRE(g.hasPath(0, 0)); // self-cycle works
     REQUIRE(g.hasPath(0, 1));
     REQUIRE(g.hasPath(0, 3));
     REQUIRE(g.hasPath(1, 2));

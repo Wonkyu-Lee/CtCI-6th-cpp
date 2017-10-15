@@ -5,35 +5,36 @@
 #include "catch.hpp"
 #include <list>
 #include <unordered_map>
+#include <memory>
 
 namespace ex_04_03 {
 
 using namespace std;
 
-struct BstNode {
+struct TreeNode {
     int value;
-    BstNode* left{nullptr};
-    BstNode* right{nullptr};
+    TreeNode* left{nullptr};
+    TreeNode* right{nullptr};
 
-    BstNode(int v): value(v) {}
+    TreeNode(int v): value(v) {}
 
-    ~BstNode() {
+    ~TreeNode() {
         delete left;
         delete right;
     }
 };
 
-bool insert(BstNode*& node, int v) {
+bool insertToBst(TreeNode*& node, int v) {
     if (node == nullptr) {
-        node = new BstNode(v);
+        node = new TreeNode(v);
         return true;
     }
 
     bool success;
     if (v < node->value) {
-        success = insert(node->left, v);
+        success = insertToBst(node->left, v);
     } else if (node->value < v) {
-        success = insert(node->right, v);
+        success = insertToBst(node->right, v);
     } else {
         success = false;
     }
@@ -41,45 +42,114 @@ bool insert(BstNode*& node, int v) {
     return success;
 }
 
-using DepthList = list<int>;
-using DepthListMap = unordered_map<int, DepthList>;
+namespace solution1 {
 
-void getDepthListsRecurse(BstNode* node, DepthListMap& depthListMap, int depth) {
+using LevelList = list<TreeNode*>;
+using LevelListVector = vector<LevelList>;
+
+void getLevelListsRecurse(TreeNode* node, LevelListVector& result, int level) {
     if (node == nullptr) {
         return;
     }
 
-    depthListMap[depth].push_back(node->value);
-    getDepthListsRecurse(node->left, depthListMap, depth + 1);
-    getDepthListsRecurse(node->right, depthListMap, depth + 1);
+    if (result.size() == level) {
+        result.push_back(LevelList());
+    }
+
+    result[level].push_back(node);
+    getLevelListsRecurse(node->left, result, level + 1);
+    getLevelListsRecurse(node->right, result, level + 1);
 }
 
-void getDepthLists(BstNode* node, DepthListMap& depthListMap) {
-    getDepthListsRecurse(node, depthListMap, 0);
+void getLevelLists(TreeNode* node, LevelListVector& result) {
+    result.clear();
+    getLevelListsRecurse(node, result, 0);
 }
+
+} // namespace solution1
+
+namespace solution2 {
+
+using LevelList = list<TreeNode*>;
+using LevelListPtr = shared_ptr<LevelList>;
+using LevelListVector = vector<LevelListPtr>;
+
+void getLevelLists(TreeNode* node, LevelListVector& result) {
+    result.clear();
+
+    if (node == nullptr) {
+        return;
+    }
+
+    LevelListPtr current = make_shared<LevelList>();
+    current->push_back(node);
+
+    while (!current->empty()) {
+        result.push_back(current);
+
+        LevelListPtr parents = current;
+        current = make_shared<LevelList>();
+
+        for (auto parent : *parents) {
+            if (parent->left != nullptr)
+                current->push_back(parent->left);
+
+            if (parent->right != nullptr)
+                current->push_back(parent->right);
+        }
+    }
+}
+
+} // namespace solution2
+
+
 
 TEST_CASE("04-03", "[04-03]") {
-    // build BST
-    BstNode* tree = nullptr;
-    insert(tree, 5);
-    insert(tree, 3);
-    insert(tree, 1);
-    insert(tree, 3);
-    insert(tree, 7);
-    insert(tree, 6);
-    insert(tree, 9);
-    insert(tree, 8);
 
-    DepthListMap depthLists;
-    getDepthLists(tree, depthLists);
+    TreeNode* tree = nullptr;
+    insertToBst(tree, 5);
+    insertToBst(tree, 3);
+    insertToBst(tree, 1);
+    insertToBst(tree, 3);
+    insertToBst(tree, 7);
+    insertToBst(tree, 6);
+    insertToBst(tree, 9);
+    insertToBst(tree, 8);
 
-    printf("[04-03] Depth list:\n");
-    for (int i = 0; i < depthLists.size(); ++i) {
-        printf("depth:%d>", i);
-        for (auto id : depthLists[i]) {
-            printf(" %d", id);
+    SECTION("Solution1: using DFS") {
+        using namespace solution1;
+
+        LevelListVector result;
+        getLevelLists(tree, result);
+
+        printf("[04-03.solution1] Level lists:\n");
+        int level = 0;
+        for (auto& levelList : result) {
+            printf("level:%d>", level);
+            for (auto each : result[level]) {
+                printf(" %d", each->value);
+            }
+            printf("\n");
+            ++level;
         }
-        printf("\n");
+    }
+
+    SECTION("Solution2: using BFS") {
+        using namespace solution2;
+
+        LevelListVector result;
+        getLevelLists(tree, result);
+
+        printf("[04-03.solution2] Level lists:\n");
+        int level = 0;
+        for (auto& levelList : result) {
+            printf("level:%d>", level);
+            for (auto each : *result[level]) {
+                printf(" %d", each->value);
+            }
+            printf("\n");
+            ++level;
+        }
     }
 
     delete tree;
