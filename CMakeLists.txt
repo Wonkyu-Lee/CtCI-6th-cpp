@@ -20,6 +20,14 @@ set(SOURCE_FILES
         ex_04_09.cpp
         ex_04_10.cpp
         ex_04_11.cpp
-        ex_04_12.cpp)
+        ex_04_12.cpp
+        ex_05_01.cpp
+        ex_05_02.cpp
+        ex_05_03.cpp
+        ex_05_04.cpp
+        ex_05_05.cpp
+        ex_05_06.cpp
+        ex_05_07.cpp
+        ex_05_08.cpp)
 
 add_executable(CtCI_6th_cpp ${SOURCE_FILES})

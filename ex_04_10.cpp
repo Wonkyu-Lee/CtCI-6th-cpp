@@ -91,7 +91,7 @@ int findNodeWithRank(TreeNode* node, vector<TreeNode*>& founds, int targetRank) 
     int rank = std::max(lRank, rRank) + 1;
 
     if (rank == targetRank)
-        founds.push_back(node);
+        founds.push_back(node); // TODO: 저장하지 않고 바로 매칭하면 공간 복잡도를 줄일 수 있을 것 같다.
 
     return rank;
 }

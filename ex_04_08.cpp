@@ -22,7 +22,7 @@ struct TreeNode {
     }
 };
 
-TreeNode* insert(TreeNode*& node, int value) {
+TreeNode* insertToBst(TreeNode*& node, int value) {
     if (node == nullptr) {
         node = new TreeNode(value);
         return node;
@@ -30,10 +30,10 @@ TreeNode* insert(TreeNode*& node, int value) {
 
     TreeNode* r = nullptr;
     if (value < node->value) {
-        r = insert(node->left, value);
+        r = insertToBst(node->left, value);
         node->left->parent = node;
     } else if (node->value < value) {
-        r = insert(node->right, value);
+        r = insertToBst(node->right, value);
         node->right->parent = node;
     }
 
@@ -67,13 +67,13 @@ TEST_CASE("04-08", "[04-08]") {
      */
 
     TreeNode* tree = nullptr;
-    TreeNode* n5 = insert(tree, 5);
-    TreeNode* n2 = insert(tree, 2);
-    TreeNode* n6 = insert(tree, 6);
-    TreeNode* n1 = insert(tree, 1);
-    TreeNode* n3 = insert(tree, 3);
-    TreeNode* n7 = insert(tree, 7);
-    TreeNode* n4 = insert(tree, 4);
+    TreeNode* n5 = insertToBst(tree, 5);
+    TreeNode* n2 = insertToBst(tree, 2);
+    TreeNode* n6 = insertToBst(tree, 6);
+    TreeNode* n1 = insertToBst(tree, 1);
+    TreeNode* n3 = insertToBst(tree, 3);
+    TreeNode* n7 = insertToBst(tree, 7);
+    TreeNode* n4 = insertToBst(tree, 4);
 
     REQUIRE(findFirstCommonAncestor(n1, n3) == n2);
     REQUIRE(findFirstCommonAncestor(n1, n7) == n5);
