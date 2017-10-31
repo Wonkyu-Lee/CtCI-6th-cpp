@@ -26,13 +26,13 @@ bool drawLine(uint8_t* screen, int w, int h, int x1, int x2, int y) {
     int x1Byte = (w * y + x1) / 8; int x1Bit = x1 % 8;
     int x2Byte = (w * y + x2) / 8; int x2Bit = x2 % 8;
 
-    const uint8_t ONES = 0b11111111;
+    const uint8_t ONES = ~0;
 
     for (int i = x1Byte; i <= x2Byte; ++i) {
         screen[i] = ONES;
     }
 
-    // if x1Bit = 0, x1ByteMask = 11111111
+    // if x1Bit = 3, x1ByteMask = 00011111
     uint8_t x1ByteMask = ONES >> x1Bit;
 
     // if x2Bit = 5, x2ByteMask = 11111000
@@ -72,13 +72,29 @@ TEST_CASE("05-08", "[05-08]") {
     SECTION("Solution by Q") {
         using namespace solutionByQ;
 
-        SECTION("A valid case")
+        SECTION("A valid case (10 ~ 27, 26)")
         {
             enum {W = 64, H = 29};
             uint8_t screen[W/8 * H] = {0,};
             int x1 = 10;
             int x2 = 27;
             int y = 26;
+            drawLine(screen, W, H, x1, x2, y);
+
+            render(screen, W, H);
+
+            for (int x = x1; x < x2; ++x) {
+                REQUIRE(isBrushed(screen, W, x, y));
+            }
+        }
+
+        SECTION("A valid case (10 ~ 13, 2)")
+        {
+            enum {W = 16, H = 16};
+            uint8_t screen[W/8 * H] = {0,};
+            int x1 = 10;
+            int x2 = 13;
+            int y = 2;
             drawLine(screen, W, H, x1, x2, y);
 
             render(screen, W, H);
