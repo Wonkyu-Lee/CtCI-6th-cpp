@@ -9,29 +9,58 @@ namespace ex_08_01 {
 
 using namespace std;
 
-namespace sol1 {
+namespace solution1 {
 
 int countUpwardWays(int n) {
-    if (n == 1) return 1; // (1)
-    if (n == 2) return 2; // (1, 1), (2)
-    if (n == 3) return 4; // (1, 1, 1), (2, 1), (1, 2), (3)
+    if (n < 0)
+        return 0;
+
+    if (n == 0)
+        return 1;
+
     return countUpwardWays(n - 1) + countUpwardWays(n - 2) + countUpwardWays(n - 3);
 }
 
-} // namespace sol1
+} // namespace solution1
 
-namespace sol2 {
+namespace solution2 {
+
+int countUpwardWays(int n, int m[]) {
+    if (n < 0)
+        return 0;
+
+    if (m[n] != -1)
+        return m[n];
+
+    if (n == 0) {
+        m[n] = 1;
+    } else {
+        m[n] = countUpwardWays(n - 1, m) + countUpwardWays(n - 2, m) + countUpwardWays(n - 3, m);
+    }
+
+    return m[n];
+}
 
 int countUpwardWays(int n) {
-    if (n == 1) return 1; // (1)
-    if (n == 2) return 2; // (1, 1), (2)
-    if (n == 3) return 4; // (1, 1, 1), (2, 1), (1, 2), (3)
+    int m[n + 1];
+    std::fill(m, m + n + 1, -1);
+    return countUpwardWays(n, m);
+}
+
+} // namespace solution2
+
+namespace solution3 {
+
+int countUpwardWays(int n) {
+    if (n < 0)  return 0;
+    if (n == 0) return 1;
+    if (n == 1) return 1;
+    if (n == 2) return 2;
 
     int a = 1;
-    int b = 2;
-    int c = 4;
-
-    for (int i = 4; i < n; ++i) {
+    int b = 1;
+    int c = 2;
+    for (int i = 3; i < n; ++i) {
         int d = a + b + c;
         a = b;
         b = c;
@@ -41,11 +70,15 @@ int countUpwardWays(int n) {
     return a + b + c;
 }
 
-} // namespace sol2
+} // namespace solution3
 
 TEST_CASE("08-01", "[08-01]") {
-    REQUIRE(sol1::countUpwardWays(10) == 274);
-    REQUIRE(sol2::countUpwardWays(10) == 274);
+    REQUIRE(solution1::countUpwardWays(10) == 274);
+    REQUIRE(solution2::countUpwardWays(10) == 274);
+    REQUIRE(solution3::countUpwardWays(10) == 274);
+
+    // overflow!!!
+    printf("countUpwardWays(%d) = %d\n", 36, solution3::countUpwardWays(37));
 }
 
 } // namespace ex_08_01
