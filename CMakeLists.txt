@@ -42,6 +42,6 @@ set(SOURCE_FILES
         ex_08_09.cpp
         ex_08_10.cpp
         ex_08_11.cpp
-        ex_08_13.cpp)
+        ex_08_13.cpp ex_09_02.cpp ex_09_05.cpp)
 
 add_executable(CtCI_6th_cpp ${SOURCE_FILES})

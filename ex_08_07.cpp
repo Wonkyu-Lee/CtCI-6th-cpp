@@ -12,6 +12,20 @@ namespace ex_08_07 {
 
 using namespace std;
 
+namespace solution1 {
+
+void permutation(char* text, vector<string>& result) {
+
+}
+
+} // namespace solution1
+
+namespace solution2 {
+
+} // namespace solution2
+
+namespace solution3 {
+
 using Callback = function<void(char*)>;
 
 void permutation(char* text, int start, Callback cb) {
@@ -38,6 +52,8 @@ void permutation(char* text, int start, Callback cb) {
 void permutation(char* text, Callback cb) {
     permutation(text, 0, cb);
 }
+
+} // namespace solution 3
 
 int factorial(int n) {
     if (n <= 1)
@@ -69,7 +85,7 @@ int countPermutations(char* text) {
 TEST_CASE("08-07", "[08-07]") {
     char text[256] = "cabda";
     int count = 0;
-    permutation(text, [&](char* r) {
+    solution3::permutation(text, [&](char* r) {
         cout << r << endl;
         ++count;
     });
