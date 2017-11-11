@@ -119,15 +119,8 @@ public:
 };
 
 TEST_CASE("10-07", "[10-07]") {
-    auto isPrime = [](int n) {
-        if (n < 2)
-            return false;
-
-        for (int i = 2; i <= sqrt(n); ++i) {
-            if (n % i == 0)
-                return false;
-        }
-        return true;
+    auto doSkip = [](int n) {
+        return n % 3 == 0;
     };
 
     SECTION("Store/Load") {
@@ -137,7 +130,7 @@ TEST_CASE("10-07", "[10-07]") {
         {
             BitSet bitSet(100);
             for (int i = 0; i < 100; ++i) {
-                if (!isPrime(i)) {
+                if (!doSkip(i)) {
                     bitSet.set(i);
                 }
             }
@@ -160,8 +153,8 @@ TEST_CASE("10-07", "[10-07]") {
     SECTION("N = 4000000000, 1GB") {
         const char* fileName = "integers.dat";
         enum {
-            NUM_INTS = 100,     // count of integers stored in the given file
-            MAX_INT = 200,      // max integer value
+            NUM_INTS = 20,     // count of integers stored in the given file
+            MAX_INT = 20,      // max integer value
         };
 
         // make file
@@ -171,14 +164,14 @@ TEST_CASE("10-07", "[10-07]") {
             printf("integers: ");
             FILE* fp = fopen(fileName, "wb");
             for (uint32_t i = 0; i < NUM_INTS; ++i) {
-                while (isPrime(k)) {
-                    ++k;
+                while (doSkip(k)) {
+                    k = (k + 1) % MAX_INT;
                     continue;
                 }
 
                 printf("%u, ", k);
                 fwrite(&k, sizeof(uint32_t), 1, fp);
-                ++k;
+                k = (k + 1) % MAX_INT;
             }
             fclose(fp);
             printf("\n");
@@ -211,10 +204,10 @@ TEST_CASE("10-07", "[10-07]") {
     SECTION("N = 1000000000, 10MB") {
         const char* fileName = "integers.dat";
         enum {
-            NUM_INTS = 100,     // count of integers stored in the given file
-            MAX_INT = 200,      // max integer value
-            INTERVAL = 10,      // interval
-            NUM_INTERVALS = 20  // count of ranges: [0, 10), [10, 20), ..., [190, 200)
+            NUM_INTS = 20,     // count of integers stored in the given file
+            MAX_INT = 20,      // max integer value
+            INTERVAL = 5,      // interval
+            NUM_INTERVALS = 4  // count of ranges
         };
 
         // make file
@@ -224,14 +217,14 @@ TEST_CASE("10-07", "[10-07]") {
             printf("integers: ");
             FILE* fp = fopen(fileName, "wb");
             for (uint32_t i = 0; i < NUM_INTS; ++i) {
-                while (isPrime(k)) {
-                    ++k;
+                while (doSkip(k)) {
+                    k = (k + 1) % MAX_INT;
                     continue;
                 }
 
                 printf("%u, ", k);
                 fwrite(&k, sizeof(uint32_t), 1, fp);
-                ++k;
+                k = (k + 1) % MAX_INT;
             }
             fclose(fp);
             printf("\n");
