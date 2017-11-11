@@ -275,23 +275,18 @@ TEST_CASE("10-07", "[10-07]") {
         // generate numbers
         {
             printf("generated numbers: ");
-            for (int i = 0; i < MAX_INT; ++i) {
-                bool isSet = false;
-                for (uint32_t j = 0; j < NUM_INTERVALS; ++j) {
-                    uint32_t base = INTERVAL * j;
-                    BitSet bitSet;
-                    loadBitSet(bitSet, base);
+            for (int i = 0; i < NUM_INTERVALS; ++i) {
+                uint32_t base = INTERVAL * i;
+                BitSet bitSet;
+                loadBitSet(bitSet, base);
 
-                    if (bitSet.isSet(i)) {
-                        isSet = true;
-                        break;
+                for (uint32_t j = base; j < base + INTERVAL; ++j) {
+                    if (!bitSet.isSet(j)) {
+                        printf("%d, ", j);
                     }
                 }
-
-                if (!isSet) {
-                    printf("%d, ", i);
-                }
             }
+
             printf("\n");
         }
     }
