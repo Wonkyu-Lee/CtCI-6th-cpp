@@ -10,13 +10,15 @@ namespace ex_12_09 {
 
 using namespace std;
 
+namespace solution1 {
+
 template <typename T>
 class SharedPtr {
     T* _rp{nullptr};
 
 public:
     SharedPtr(T* rp)
-    :_rp(rp) {
+            :_rp(rp) {
         incRefCount();
     }
 
@@ -84,26 +86,99 @@ private:
     };
 };
 
-TEST_CASE("12-09", "[12-09]") {
-    class Obj {
-    public:
-        Obj(int id):id(id) {
-            cout << "Obj(" << id << ")" << endl;
-        }
-        ~Obj() {
-            cout << "~Obj(" << id << ")" << endl;
+} // namespace solution1
+
+namespace solution2 {
+
+template <typename T>
+class SharedPtr {
+    T* _rp{nullptr};
+    int* _rc{nullptr};
+
+public:
+    SharedPtr(T* rp)
+            :_rp(rp) {
+        incRefCount();
+    }
+
+    ~SharedPtr() {
+        decRefCount();
+    }
+
+    SharedPtr(const SharedPtr& rhs) {
+        _rp = rhs._rp;
+        _rc = rhs._rc;
+        incRefCount();
+    }
+
+    SharedPtr& operator=(const SharedPtr& rhs) {
+        if (this == &rhs)
+            return *this;
+
+        if (_rp == rhs._rp)
+            return *this;
+
+        decRefCount();
+        _rp = rhs._rp;
+        _rc = rhs._rc;
+        incRefCount();
+        return *this;
+    }
+
+    T& operator*() {
+        return *_rp;
+    }
+
+    T* operator->() {
+        return _rp;
+    }
+
+    int refCount() {
+        return *_rc;
+    }
+
+private:
+    void incRefCount() {
+        if (_rc == nullptr) {
+            _rc = new int();
+            (*_rc) = 0;
         }
 
-        int id{0};
-    };
+        ++(*_rc);
+    }
 
-    SharedPtr<Obj> p1 = new Obj(1);
+    void decRefCount() {
+        --(*_rc);
+        if (*_rc == 0) {
+            delete _rp;
+            delete _rc;
+        }
+    }
+};
+
+} // namespace solution2
+
+class Obj {
+public:
+    Obj(int id):id(id) {
+        cout << "Obj(" << id << ")" << endl;
+    }
+    ~Obj() {
+        cout << "~Obj(" << id << ")" << endl;
+    }
+
+    int id{0};
+};
+
+template<typename ObjPtr>
+void test() {
+    ObjPtr p1 = new Obj(1);
     REQUIRE(p1.refCount() == 1);
     REQUIRE(p1->id == 1);
     REQUIRE((*p1).id == 1);
 
     {
-        SharedPtr<Obj> p2 = p1;
+        ObjPtr p2 = p1;
         REQUIRE(p1.refCount() == 2);
         REQUIRE(p2.refCount() == 2);
         REQUIRE(p2->id == 1);
@@ -113,13 +188,24 @@ TEST_CASE("12-09", "[12-09]") {
     REQUIRE(p1.refCount() == 1);
 
     {
-        SharedPtr<Obj> p2 = new Obj(2);
+        ObjPtr p2 = new Obj(2);
     }
 
-    SharedPtr<Obj> p3(new Obj(3));
+    ObjPtr p3(new Obj(3));
     p1 = p3;
     REQUIRE(p1->id == 3);
     REQUIRE(p3->id == 3);
+}
+
+TEST_CASE("12-09", "[12-09]") {
+    SECTION("Solution1")
+    {
+        test<solution1::SharedPtr<Obj>>();
+    }
+
+    SECTION("Solution2") {
+        test<solution2::SharedPtr<Obj>>();
+    }
 }
 
 } // namespace ex_12_09
