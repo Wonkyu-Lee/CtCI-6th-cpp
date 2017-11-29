@@ -42,6 +42,6 @@ set(SOURCE_FILES
         ex_08_09.cpp
         ex_08_10.cpp
         ex_08_11.cpp
-        ex_08_13.cpp ex_09_02.cpp ex_09_05.cpp ex_10_01.cpp ex_10_02.cpp ex_10_03.cpp ex_10_04.cpp ex_10_05.cpp ex_10_07.cpp ex_10_11.cpp ex_10_10.cpp ex_10_08.cpp ex_10_09.cpp ex_12_01.cpp ex_12_02.cpp ex_12_06.cpp ex_12_08.cpp ex_12_09.cpp ex_12_10.cpp ex_12_11.cpp ex_16_01.cpp ex_16_01.cpp ex_16_02.cpp ex_16_03.cpp ex_16_04.cpp)
+        ex_08_13.cpp ex_09_02.cpp ex_09_05.cpp ex_10_01.cpp ex_10_02.cpp ex_10_03.cpp ex_10_04.cpp ex_10_05.cpp ex_10_07.cpp ex_10_11.cpp ex_10_10.cpp ex_10_08.cpp ex_10_09.cpp ex_12_01.cpp ex_12_02.cpp ex_12_06.cpp ex_12_08.cpp ex_12_09.cpp ex_12_10.cpp ex_12_11.cpp ex_16_01.cpp ex_16_01.cpp ex_16_02.cpp ex_16_03.cpp ex_16_04.cpp ex_16_05.cpp ex_16_06.cpp ex_16_07.cpp ex_16_08.cpp)
 
 add_executable(CtCI_6th_cpp ${SOURCE_FILES})
