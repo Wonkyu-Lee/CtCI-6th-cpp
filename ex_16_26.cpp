@@ -393,20 +393,26 @@ TEST_CASE("16-26", "[16-26]") {
 
     SECTION("Calculator") {
         Calculator calculator("21 + 3 * 15 - 23");
-        if (!calculator.valid()) {
-            cout << calculator.errorMessage();
-        } else {
-            cout << "result = " <<  calculator.result() << endl;
-        }
+        REQUIRE(calculator.valid());
+        REQUIRE((abs(calculator.result() - (21 + 3 * 15 - 23)) <= 0.001));
     }
 
     SECTION("Calculator") {
         Calculator calculator("21 + 3 * 15 / 0 - 23");
-        if (!calculator.valid()) {
-            cout << calculator.errorMessage();
-        } else {
-            cout << "result = " <<  calculator.result() << endl;
-        }
+        REQUIRE(calculator.valid() == false);
+        cout << calculator.errorMessage() << endl;
+    }
+
+    SECTION("Calculator") {
+        Calculator calculator("99");
+        REQUIRE(calculator.valid());
+        REQUIRE((abs(calculator.result() - (99)) <= 0.001));
+    }
+
+    SECTION("Calculator") {
+        Calculator calculator("345 + 152/12 - 88");
+        REQUIRE(calculator.valid());
+        REQUIRE((abs(calculator.result() - (345 + 152.0/12 - 88)) <= 0.001));
     }
 }
 

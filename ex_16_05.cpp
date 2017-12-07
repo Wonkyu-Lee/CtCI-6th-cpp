@@ -6,6 +6,7 @@
 
 namespace ex_16_05 {
 
+// TODO: 틀렸음 다시 해봐.
 int countLastZerosOfFactorial(int n) {
     int result = n / 5;
 
