@@ -8,6 +8,7 @@
 #include <list>
 #include <unordered_map>
 #include <algorithm>
+#include <vector>
 
 namespace qds {
 
@@ -221,6 +222,14 @@ public:
             return std::list<Key>();
 
         return sorted;
+    }
+
+    std::vector<Key> getVertices() const {
+        std::vector<Key> result;
+        for (auto& each : vertices) {
+            result.push_back(each.first);
+        }
+        return result;
     }
 };
 

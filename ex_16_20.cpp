@@ -14,6 +14,8 @@ namespace ex_16_20 {
 
 using namespace std;
 
+// TODO: Just use a hash table which maps a code string to an word list.
+
 class Phone {
 private:
     class Node {

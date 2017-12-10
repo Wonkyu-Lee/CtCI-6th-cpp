@@ -23,7 +23,27 @@ public:
     }
 
     int rand7() {
-        return (rand5() + rand5() + rand5()) % 7;
+        while (true) {
+            int r = rand5() * 5 + rand5();
+            if (r < 21) {
+                return r % 7;
+            }
+        }
+    }
+
+    int rand7_2() {
+        while (true) {
+            int r1 = rand5() * 2;
+            int r2 = rand5();
+            if (r2 == 4) {
+                continue;
+            }
+
+            int r = r1 + (r2 % 2);
+            if (r < 7) {
+                return r;
+            }
+        }
     }
 };
 
@@ -34,7 +54,7 @@ TEST_CASE("16-23", "[16-23]") {
     Random random;
 
     for (int i = 0; i < 1000; ++i) {
-        int x = random.rand7();
+        int x = random.rand7_2();
         counts[x]++;
     }
 

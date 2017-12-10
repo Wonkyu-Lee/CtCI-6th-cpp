@@ -27,6 +27,7 @@ public:
 class Operator : public Token {
     OperatorType _opType;
     int _priority{0};
+
 public:
     TokenType type() const override {
         return OPERATOR;
@@ -78,6 +79,7 @@ public:
 
 class Operand : public Token {
     int _value{0};
+
 public:
     TokenType type() const override {
         return OPERAND;
@@ -316,7 +318,6 @@ public:
                 it.next();
                 continue;
             }
-
 
             while (operators.top().priority() > t.priority()) {
                 Operator op = operators.top();
