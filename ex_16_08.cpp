@@ -11,6 +11,8 @@ namespace ex_16_08 {
 
 using namespace std;
 
+namespace solution1 {
+
 string readNumber(int n) {
     if (n == 0) {
         return "Zero";
@@ -62,12 +64,103 @@ string readNumber(int n) {
     }
 }
 
+} // namespace solution1
+
+
+namespace solution2 {
+
+class IntReader {
+    static const string BIGS[];
+    static const string TENS[];
+    static const string SMALLS[];
+
+public:
+    static string read(int n) {
+        if (n == 0)
+            return SMALLS[0];
+
+        list<string> parts;
+        bool negative = n < 0;
+        if (negative) {
+            n = -n;
+        }
+
+        int current = n;
+        int i = 0;
+        while (current > 0) {
+            ostringstream out;
+            int chunk = current % 1000;
+            if (chunk > 0) {
+                out << readChunk(chunk);
+                if (i > 0) {
+                    out << " " << BIGS[i];
+                }
+                parts.push_front(out.str());
+            }
+
+            current /= 1000;
+            ++i;
+        }
+
+        if (negative) {
+            parts.push_front("Negative");
+        }
+
+        return convert(parts);
+    }
+
+    static string readChunk(int n) {
+        list<string> parts;
+
+        if (n / 100 > 0) {
+            parts.push_back(SMALLS[n / 100]);
+            parts.push_back("Hundred");
+            n = n % 100;
+        }
+
+        if (20 <= n) {
+            parts.push_back(TENS[n / 10]);
+            n = n % 10;
+        }
+
+        if (0 < n) {
+            parts.push_back(SMALLS[n]);
+        }
+
+        return convert(parts);
+    }
+
+    static string convert(list<string>& parts) {
+        ostringstream out;
+
+        while (parts.size() > 1) {
+            out << parts.front() << " ";
+            parts.pop_front();
+        }
+
+        out << parts.front();
+        return out.str();
+    }
+};
+
+const string IntReader::BIGS[] = {"", "Thousand", "Million", "Billion"};
+const string IntReader::TENS[] = {"", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"};
+const string IntReader::SMALLS[] = {"Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"};
+
+} // namespace solution2
+
+
+
 TEST_CASE("16-08", "[16-08]") {
-    REQUIRE(readNumber(0) == "Zero");
-    REQUIRE(readNumber(7) == "Seven");
-    REQUIRE(readNumber(543) == "Five Hundred Forty Three");
-    REQUIRE(readNumber(11512) == "Eleven Thousand Five Hundred Twelve");
-    REQUIRE(readNumber(2104712638) == "Two Billion One Hundred Four Million Seven Hundred Twelve Thousand Six Hundred Thirty Eight");
+    REQUIRE(solution1::readNumber(0) == "Zero");
+    REQUIRE(solution1::readNumber(7) == "Seven");
+    REQUIRE(solution1::readNumber(543) == "Five Hundred Forty Three");
+    REQUIRE(solution1::readNumber(11512) == "Eleven Thousand Five Hundred Twelve");
+    REQUIRE(solution1::readNumber(2104712638) == "Two Billion One Hundred Four Million Seven Hundred Twelve Thousand Six Hundred Thirty Eight");
+
+
+    REQUIRE(solution2::IntReader::read(-2104712618) == "Negative Two Billion One Hundred Four Million Seven Hundred Twelve Thousand Six Hundred Eighteen");
+
 }
 
 
